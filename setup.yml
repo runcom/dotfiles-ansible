@@ -88,7 +88,7 @@
     - name: copy offlineimaprc
       copy: src=files/mutt/_offlineimaprc dest=/home/{{ username }}/.offlineimaprc backup=yes
     - name: .mutt directory
-      file: path=/home/{{ username }}/.mutt state=present
+      file: path=/home/{{ username }}/.mutt state=directory
     - name: copy mutt signature
       copy: src=files/mutt/signature dest=/home/{{ username }}/.mutt/signature backup=yes
     - name: copy mutt colorscheme 1
@@ -96,7 +96,7 @@
     - name: copy mutt colorscheme 2
       copy: src=files/mutt/mutt-patch-highlighting.muttrc dest=/home/{{ username }}/.mutt/mutt-patch-highlighting.muttrc backup=yes
     - name: ensure .config/systemd/user
-      file: path=/home/{{ amurdaca }}/.config/systemd/user state=present
+      file: path=/home/{{ username }}/.config/systemd/user state=directory
     - name: copy systemd for mutt 1
       copy: src=files/mutt/mail.target dest=/home/{{ username }}/.config/systemd/user/mail.target backup=yes
     - name: copy systemd for mutt 2
@@ -108,22 +108,25 @@
       copy: src=files/mutt/email_notifier dest=/usr/local/bin/email_notifier owner=root group=root mode=755
     - name: copy systemd for email_notifier
       copy: src=files/mutt/emailnotifier.service dest=/home/{{ username }}/.config/systemd/user/emailnotifier.service backup=yes
-    # TODO(runcom): the systemd module is available from ansible 2.2
-    #- name: enable emailnotifier.service
-      #systemd:
-        #name: emailnotifier.service
-        #state: started
-        #enabled: yes
-    #- name: enable mail.target
-      #systemd:
-        #name: mail.target
-        #enabled: yes
-    #- name: enable offlineimap@amurdaca.service
-      #systemd:
-        #name: offlineimap@amurdaca.service
-        #enabled: yes
-    #- name: enable offlineimap@amurdaca.timer
-      #systemd:
-        #name: offlineimap@amurdaca.timer
-        #state: started
-        #enabled: yes
+    - name: enable emailnotifier.service
+      systemd:
+        name: emailnotifier.service
+        state: started
+        enabled: yes
+        user: yes
+    - name: enable mail.target
+      systemd:
+        name: mail.target
+        enabled: yes
+        user: yes
+    - name: enable offlineimap@amurdaca.service
+      systemd:
+        name: offlineimap@amurdaca.service
+        enabled: no
+        user: yes
+    - name: enable offlineimap@amurdaca.timer
+      systemd:
+        name: offlineimap@amurdaca.timer
+        state: started
+        enabled: yes
+        user: yes
