@@ -8,6 +8,7 @@
       dnf: name={{ item }} state=latest
       with_items:
         - mosh
+        - asciidoc
         - git-email
         - terminator
         - zsh
