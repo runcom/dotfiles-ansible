@@ -1,0 +1,6 @@
+[brew]                                                                          
+name=Repository for rhpkg                                                       
+# harcoded 7 - on rhel should be \$releasever                                   
+baseurl=http://download.lab.bos.redhat.com/rel-eng/brew/rhel/7/                 
+enabled=0                                                                       
+gpgcheck=0 

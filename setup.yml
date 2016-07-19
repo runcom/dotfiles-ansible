@@ -99,17 +99,17 @@
       template: src=templates/signature.j2 dest=/home/{{ username }}/.mutt/signature backup=yes
       with_items:
         - "{{ global }}"
-    - name: copy mutt colorscheme 1
+    - name: copy mutt colorscheme
       copy: src=files/mutt/mutt-colors-solarized-dark-256.muttrc dest=/home/{{ username }}/.mutt/mutt-colors-solarized-dark-256.muttrc backup=yes
-    - name: copy mutt colorscheme 2
+    - name: copy mutt colorscheme patch
       copy: src=files/mutt/mutt-patch-highlighting.muttrc dest=/home/{{ username }}/.mutt/mutt-patch-highlighting.muttrc backup=yes
     - name: ensure .config/systemd/user
       file: path=/home/{{ username }}/.config/systemd/user state=directory
-    - name: copy systemd for mutt 1
+    - name: copy systemd for offlineimap mail.target
       copy: src=files/mutt/mail.target dest=/home/{{ username }}/.config/systemd/user/mail.target backup=yes
-    - name: copy systemd for mutt 2
+    - name: copy systemd for offlineimap service
       copy: src=files/mutt/offlineimap@.service dest=/home/{{ username }}/.config/systemd/user/offlineimap@.service backup=yes
-    - name: copy systemd for mutt 3
+    - name: copy systemd for offlineimap timer
       copy: src=files/mutt/offlineimap@.timer dest=/home/{{ username }}/.config/systemd/user/offlineimap@.timer backup=yes
     - name: install email_notifier
       become: true
@@ -138,3 +138,14 @@
         state: started
         enabled: yes
         user: yes
+    - name: install private brew repo
+      become: true
+      copy: src=files/brew.repo dest=/etc/yum.repos.d/brew.repo backup=yes
+    - name: install rhpkg
+      become: true
+      dnf: name=rhpkg state=latest enablerepo=brew
+    - name: ensure $HOME/rh-scm
+      file: path=/home/{{ username }}/rh-scm state=directory
+    - name: install virtualbox.repo
+      become: true
+      get_url: url=http://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo dest=/etc/yum.repos.d/virtualbox.repo
