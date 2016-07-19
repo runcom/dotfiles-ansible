@@ -96,7 +96,9 @@
     - name: .mutt directory
       file: path=/home/{{ username }}/.mutt state=directory
     - name: copy mutt signature
-      copy: src=files/mutt/signature dest=/home/{{ username }}/.mutt/signature backup=yes
+      template: src=templates/signature.j2 dest=/home/{{ username }}/.mutt/signature backup=yes
+      with_items:
+        - "{{ global }}"
     - name: copy mutt colorscheme 1
       copy: src=files/mutt/mutt-colors-solarized-dark-256.muttrc dest=/home/{{ username }}/.mutt/mutt-colors-solarized-dark-256.muttrc backup=yes
     - name: copy mutt colorscheme 2
