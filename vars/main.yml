@@ -1,0 +1,7 @@
+global:
+  -
+    app_password: 'password'
+    imap_user: 'youruser@gmail.com'
+    from_user: 'youralias@gmail.com'
+    full_name: 'Antonio Murdaca'
+    gpg_keyid: '0x0DE936B9'

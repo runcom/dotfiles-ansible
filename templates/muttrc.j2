@@ -1,12 +1,12 @@
 # A basic .muttrc for use with Gmail
 
 # Change the following six lines to match your Gmail account details
-set imap_user = "amurdaca@GMAIL.com"
-set imap_pass = ""
-set smtp_url = "smtp://amurdaca@GMAIL.com@smtp.gmail.com:587/"
-set smtp_pass = ""
-set from = "runcom@GMAIL.com"
-set realname = "Antonio Murdaca"
+set imap_user = "{{ item.imap_user }}"
+set imap_pass = "{{ item.app_password }}"
+set smtp_url = "smtp://{{ item.imap_user }}@smtp.gmail.com:587/"
+set smtp_pass = "{{ item.app_password }}"
+set from = "{{ item.from_user }}"
+set realname = "{{ item.full_name }}"
 set signature = ~/.mutt/signature
 
 # Change the following line to a different editor you prefer (and update the Dockerfile accordingly, of course).
@@ -104,7 +104,7 @@ source ~/.gpg.rc
 
 set pgp_ignore_subkeys = no
 set pgp_use_gpg_agent = yes
-set pgp_sign_as = 0x0DE936B9
+set pgp_sign_as = {{ item.gpg_keyid }}
 set pgp_timeout = 3600
 set crypt_autosign = yes
 set crypt_replyencrypt = yes

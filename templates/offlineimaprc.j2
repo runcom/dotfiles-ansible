@@ -22,8 +22,8 @@ sep = .
 [Repository Gmail-Remote]
 type = Gmail
 maxconnections = 2
-remoteuser = amurdaca@GMAIL.com
-remotepass = 
+remoteuser = {{ item.imap_user }}
+remotepass = {{ item.app_password }}
 realdelete = no
 createfolders = False
 folderfilter = lambda foldername: foldername not in ['[Gmail]/All Mail', '[Gmail]/Important']
