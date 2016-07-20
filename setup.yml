@@ -35,7 +35,6 @@
         - mercurial
         - golang-godoc
         - golang-github-cpuguy83-go-md2man
-        - godep
         - recode
         - ostree
         - python-ldap
@@ -149,3 +148,4 @@
     - name: install virtualbox.repo
       become: true
       get_url: url=http://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo dest=/etc/yum.repos.d/virtualbox.repo
+    #- name: install godep via go get!
