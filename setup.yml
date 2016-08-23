@@ -3,149 +3,151 @@
   vars:
     username: amurdaca
   tasks:
-    - name: include vars
-      include_vars: vars/main.yml
-    - name: add basic needed pkgs
-      become: true
-      dnf: name={{ item }} state=latest
-      with_items:
-        - mosh
-        - asciidoc
-        - git-email
-        - terminator
-        - zsh
-        - cmake
-        - htop
-        - python-devel
-        - ctags
-        - vim-enhanced
-        - jq
-        - the_silver_searcher
-        - vim-X11
-        - ruby
-        - ruby-devel
-        - gnome-tweak-tool
-        - gnome-shell-extension-pomodoro
-        - graphviz
-        - perl-Text-CharWidth
-        - krb5-workstation
-        - google-chrome-stable
-        - golang
-        - libvirt-sandbox
-        - mercurial
-        - golang-godoc
-        - golang-github-cpuguy83-go-md2man
-        - recode
-        - ostree
-        - python-ldap
-        - pastebinit
-        - 'dnf-command(system-upgrade)'
-        - mutt
-        - python-inotify
-        - goobook
-    - name: add pkgs needed to compile docker with hack/make.sh on host
-      become: true
-      dnf: name={{ item }} state=latest
-      with_items:
-        - device-mapper-devel
-        - audit-libs-devel
-        - glibc-static
-        - systemd-devel
-        - libseccomp-static
-    - name: add pkgs needed to compile docker with rpmbuild
-      become: true
-      dnf: name={{ item }} state=latest
-      with_items:
-        - btrfs-progs-devel
-        - selinux-policy-devel
-        - sqlite-devel
-    - name: add pkgs needed for --size in virt-builder
-      become: true
-      dnf: name={{ item }} state=latest
-      with_items:
-        - libguestfs-xfs
-    - name: add group installs
-      become: true
-      dnf: name={{ item }} state=present
-      with_items:
-        - "@development-tools"
-        - "@virtualization"
-        - "@C Development Tools and Libraries"
-    - name: setup tmp dir to compile and install offlineimap
-      local_action: command mktemp -d
-      register: tempdir_offlineimap
-    - name: clone offlineimap git
-      git: repo=ssh://git@github.com/OfflineIMAP/offlineimap.git dest={{ tempdir_offlineimap.stdout }}
-    - name: compile and install offlineimap
-      shell: cd {{ tempdir_offlineimap.stdout  }} && make build && sudo python setup.py install
-    - name: purge offlineimap tmpdir
-      file: path={{ tempdir_offlineimap.stdout  }} state=absent
-    - name: copy gpg.rc for gpg2
-      copy: src=files/mutt/_gpg.rc dest=/home/{{ username }}/.gpg.rc backup=yes
-    - name: copy muttrc
-      template: src=templates/muttrc.j2 dest=/home/{{ username }}/.muttrc backup=yes
-      with_items:
-        - "{{ global }}"
-    - name: copy goobookrc
-      copy: src=files/mutt/_goobookrc dest=/home/{{ username }}/.goobookrc backup=yes
-    - name: copy offlineimaprc
-      template: src=templates/offlineimaprc.j2 dest=/home/{{ username }}/.offlineimaprc backup=yes
-      with_items:
-        - "{{ global }}"
-    - name: .mutt directory
-      file: path=/home/{{ username }}/.mutt state=directory
-    - name: copy mutt signature
-      template: src=templates/signature.j2 dest=/home/{{ username }}/.mutt/signature backup=yes
-      with_items:
-        - "{{ global }}"
-    - name: copy mutt colorscheme
-      copy: src=files/mutt/mutt-colors-solarized-dark-256.muttrc dest=/home/{{ username }}/.mutt/mutt-colors-solarized-dark-256.muttrc backup=yes
-    - name: copy mutt colorscheme patch
-      copy: src=files/mutt/mutt-patch-highlighting.muttrc dest=/home/{{ username }}/.mutt/mutt-patch-highlighting.muttrc backup=yes
-    - name: ensure .config/systemd/user
-      file: path=/home/{{ username }}/.config/systemd/user state=directory
-    - name: copy systemd for offlineimap mail.target
-      copy: src=files/mutt/mail.target dest=/home/{{ username }}/.config/systemd/user/mail.target backup=yes
-    - name: copy systemd for offlineimap service
-      copy: src=files/mutt/offlineimap@.service dest=/home/{{ username }}/.config/systemd/user/offlineimap@.service backup=yes
-    - name: copy systemd for offlineimap timer
-      copy: src=files/mutt/offlineimap@.timer dest=/home/{{ username }}/.config/systemd/user/offlineimap@.timer backup=yes
-    - name: install email_notifier
-      become: true
-      copy: src=files/mutt/email_notifier dest=/usr/local/bin/email_notifier owner=root group=root mode=755
-    - name: copy systemd for email_notifier
-      copy: src=files/mutt/emailnotifier.service dest=/home/{{ username }}/.config/systemd/user/emailnotifier.service backup=yes
-    - name: enable emailnotifier.service
-      systemd:
-        name: emailnotifier.service
-        state: started
-        enabled: yes
-        user: yes
-    - name: enable mail.target
-      systemd:
-        name: mail.target
-        enabled: yes
-        user: yes
-    - name: enable offlineimap@{{ username }}.service
-      systemd:
-        name: offlineimap@{{ username }}.service
-        enabled: no
-        user: yes
-    - name: enable offlineimap@{{ username }}.timer
-      systemd:
-        name: offlineimap@{{ username }}.timer
-        state: started
-        enabled: yes
-        user: yes
-    - name: install private brew repo
-      become: true
-      copy: src=files/brew.repo dest=/etc/yum.repos.d/brew.repo backup=yes
-    - name: install rhpkg
-      become: true
-      dnf: name=rhpkg state=latest enablerepo=brew
-    - name: ensure $HOME/rh-scm
-      file: path=/home/{{ username }}/rh-scm state=directory
-    - name: install virtualbox.repo
-      become: true
-      get_url: url=http://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo dest=/etc/yum.repos.d/virtualbox.repo
-    #- name: install godep via go get!
+    - debug: msg="{{ lookup('env','HOME')  }} is an environment variable"
+    #- name: include vars
+      #include_vars: vars/main.yml
+    #- name: add basic needed pkgs
+      #become: true
+      #dnf: name={{ item }} state=latest
+      #with_items:
+        #- mosh
+        #- asciidoc
+        #- git-email
+        #- terminator
+        #- zsh
+        #- cmake
+        #- htop
+        #- python-devel
+        #- ctags
+        #- vim-enhanced
+        #- jq
+        #- the_silver_searcher
+        #- vim-X11
+        #- ruby
+        #- ruby-devel
+        #- gnome-tweak-tool
+        #- gnome-shell-extension-pomodoro
+        #- graphviz
+        #- perl-Text-CharWidth
+        #- krb5-workstation
+        #- google-chrome-stable
+        #- golang
+        #- libvirt-sandbox
+        #- mercurial
+        #- golang-godoc
+        #- golang-github-cpuguy83-go-md2man
+        #- recode
+        #- ostree
+        #- python-ldap
+        #- pastebinit
+        #- 'dnf-command(system-upgrade)'
+        #- mutt
+        #- python-inotify
+        #- goobook
+        #- keepassx
+    #- name: add pkgs needed to compile docker with hack/make.sh on host
+      #become: true
+      #dnf: name={{ item }} state=latest
+      #with_items:
+        #- device-mapper-devel
+        #- audit-libs-devel
+        #- glibc-static
+        #- systemd-devel
+        #- libseccomp-static
+    #- name: add pkgs needed to compile docker with rpmbuild
+      #become: true
+      #dnf: name={{ item }} state=latest
+      #with_items:
+        #- btrfs-progs-devel
+        #- selinux-policy-devel
+        #- sqlite-devel
+    #- name: add pkgs needed for --size in virt-builder
+      #become: true
+      #dnf: name={{ item }} state=latest
+      #with_items:
+        #- libguestfs-xfs
+    #- name: add group installs
+      #become: true
+      #dnf: name={{ item }} state=present
+      #with_items:
+        #- "@development-tools"
+        #- "@virtualization"
+        #- "@C Development Tools and Libraries"
+    #- name: setup tmp dir to compile and install offlineimap
+      #local_action: command mktemp -d
+      #register: tempdir_offlineimap
+    #- name: clone offlineimap git
+      #git: repo=ssh://git@github.com/OfflineIMAP/offlineimap.git dest={{ tempdir_offlineimap.stdout }}
+    #- name: compile and install offlineimap
+      #shell: cd {{ tempdir_offlineimap.stdout  }} && make build && sudo python setup.py install
+    #- name: purge offlineimap tmpdir
+      #file: path={{ tempdir_offlineimap.stdout  }} state=absent
+    #- name: copy gpg.rc for gpg2
+      #copy: src=files/mutt/_gpg.rc dest=/home/{{ username }}/.gpg.rc backup=yes
+    #- name: copy muttrc
+      #template: src=templates/muttrc.j2 dest=/home/{{ username }}/.muttrc backup=yes
+      #with_items:
+        #- "{{ global }}"
+    #- name: copy goobookrc
+      #copy: src=files/mutt/_goobookrc dest=/home/{{ username }}/.goobookrc backup=yes
+    #- name: copy offlineimaprc
+      #template: src=templates/offlineimaprc.j2 dest=/home/{{ username }}/.offlineimaprc backup=yes
+      #with_items:
+        #- "{{ global }}"
+    #- name: .mutt directory
+      #file: path=/home/{{ username }}/.mutt state=directory
+    #- name: copy mutt signature
+      #template: src=templates/signature.j2 dest=/home/{{ username }}/.mutt/signature backup=yes
+      #with_items:
+        #- "{{ global }}"
+    #- name: copy mutt colorscheme
+      #copy: src=files/mutt/mutt-colors-solarized-dark-256.muttrc dest=/home/{{ username }}/.mutt/mutt-colors-solarized-dark-256.muttrc backup=yes
+    #- name: copy mutt colorscheme patch
+      #copy: src=files/mutt/mutt-patch-highlighting.muttrc dest=/home/{{ username }}/.mutt/mutt-patch-highlighting.muttrc backup=yes
+    #- name: ensure .config/systemd/user
+      #file: path=/home/{{ username }}/.config/systemd/user state=directory
+    #- name: copy systemd for offlineimap mail.target
+      #copy: src=files/mutt/mail.target dest=/home/{{ username }}/.config/systemd/user/mail.target backup=yes
+    #- name: copy systemd for offlineimap service
+      #copy: src=files/mutt/offlineimap@.service dest=/home/{{ username }}/.config/systemd/user/offlineimap@.service backup=yes
+    #- name: copy systemd for offlineimap timer
+      #copy: src=files/mutt/offlineimap@.timer dest=/home/{{ username }}/.config/systemd/user/offlineimap@.timer backup=yes
+    #- name: install email_notifier
+      #become: true
+      #copy: src=files/mutt/email_notifier dest=/usr/local/bin/email_notifier owner=root group=root mode=755
+    #- name: copy systemd for email_notifier
+      #copy: src=files/mutt/emailnotifier.service dest=/home/{{ username }}/.config/systemd/user/emailnotifier.service backup=yes
+    #- name: enable emailnotifier.service
+      #systemd:
+        #name: emailnotifier.service
+        #state: started
+        #enabled: yes
+        #user: yes
+    #- name: enable mail.target
+      #systemd:
+        #name: mail.target
+        #enabled: yes
+        #user: yes
+    #- name: enable offlineimap@{{ username }}.service
+      #systemd:
+        #name: offlineimap@{{ username }}.service
+        #enabled: no
+        #user: yes
+    #- name: enable offlineimap@{{ username }}.timer
+      #systemd:
+        #name: offlineimap@{{ username }}.timer
+        #state: started
+        #enabled: yes
+        #user: yes
+    #- name: install private brew repo
+      #become: true
+      #copy: src=files/brew.repo dest=/etc/yum.repos.d/brew.repo backup=yes
+    #- name: install rhpkg
+      #become: true
+      #dnf: name=rhpkg state=latest enablerepo=brew
+    #- name: ensure $HOME/rh-scm
+      #file: path=/home/{{ username }}/rh-scm state=directory
+    #- name: install virtualbox.repo
+      #become: true
+      #get_url: url=http://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo dest=/etc/yum.repos.d/virtualbox.repo
+    ##- name: install godep via go get!
