@@ -42,6 +42,7 @@
         #- pastebinit
         #- 'dnf-command(system-upgrade)'
         #- mutt
+        #- vlc
         #- python-inotify
         #- goobook
         #- keepassx
