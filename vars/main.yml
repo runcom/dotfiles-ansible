@@ -1,8 +1,8 @@
 global:
   -
-    app_password: 'password'
-    imap_user: 'youruser@gmail.com'
-    from_user: 'youralias@gmail.com'
+    app_password: 'google_app_password'
+    imap_user: 'amurdaca@redhat.com'
+    from_user: 'runcom@redhat.com'
     full_name: 'Antonio Murdaca'
     irc_nick: 'runcom'
     gpg_keyid: '0x0DE936B9'
