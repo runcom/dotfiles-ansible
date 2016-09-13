@@ -151,3 +151,7 @@
       become: true
       get_url: url=http://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo dest=/etc/yum.repos.d/virtualbox.repo
     #- name: install godep via go get!
+    #
+    # TODO(runcom):
+    # install https://gist.github.com/runcom/fcd9b4ac8705e95d62666a3d594ca1a0 to
+    # /home/{{ username }}/bin/docker-changelog..sh and give it chmod a+x
