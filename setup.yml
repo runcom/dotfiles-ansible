@@ -45,6 +45,8 @@
         - python-inotify
         - goobook
         - keepassx
+        - terminus-fonts
+        - pidgin
     - name: add pkgs needed to compile docker with hack/make.sh on host
       become: true
       dnf: name={{ item }} state=latest
