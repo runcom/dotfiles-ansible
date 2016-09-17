@@ -167,5 +167,6 @@
     # TODO(runcom):
     # git clone git://git.suckless.org/st
     # copy files/config.h
+    # sed -e "/@tic/d" -i Makefile
     # sudo make clean install
     # sudo cp files/st.desktop /usr/share/applications/
