@@ -14,7 +14,7 @@ maildir_folder = expanduser(r"~/Mail/")
 fd =  open(expanduser(r"~/.mutt/mailboxes"), 'r')
 # [10:-1] to remove the initial '^mailboxes '
 boxes = filter(None, (b.rstrip().replace('+Gmail','') for b in fd.readline()[10:-1].split('"')))
-boxesFilter = lambda foldername: foldername not in ["/sent", "/drafts", "/flagged", "/spam", "/trash"]
+boxesFilter = lambda foldername: foldername in ["/INBOX", "/aos-devel", "/bugzilla", "/container-teams"]
 boxes = filter(boxesFilter, boxes)
 fd.close()
 
