@@ -155,11 +155,11 @@
     - name: install virtualbox.repo
       become: true
       get_url: url=http://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo dest=/etc/yum.repos.d/virtualbox.repo
+    - name: ensure $HOME/bin
+      file: path=/home/{{ username }}/bin state=directory
+    - name: install docker-changelog.sh
+      get_url: url=https://gist.githubusercontent.com/runcom/fcd9b4ac8705e95d62666a3d594ca1a0/raw/b3f679e33224bd0dc8e873e9c7fd66893f1f376e/docker-changelog.sh dest=/home/{{ username }}/bin/docker-changelog mode=0755
     #- name: install godep via go get!
-    #
-    # TODO(runcom):
-    # install https://gist.github.com/runcom/fcd9b4ac8705e95d62666a3d594ca1a0 to
-    # /home/{{ username }}/bin/docker-changelog.sh and give it chmod a+x
     #
     # TODO(runcom):
     # cp files/tmux.conf $HOME/.tmux.conf
