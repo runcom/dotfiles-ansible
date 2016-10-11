@@ -9,6 +9,8 @@
       become: true
       dnf: name={{ item }} state=latest
       with_items:
+        - rust
+        - cargo
         - mosh
         - asciidoc
         - git-email
