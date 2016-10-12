@@ -9,6 +9,10 @@
       become: true
       dnf: name={{ item }} state=latest
       with_items:
+        - unrar
+        - vagrant-libvirt
+        - fedora-packager
+        - gofed
         - rust
         - cargo
         - mosh
@@ -157,11 +161,108 @@
     - name: install virtualbox.repo
       become: true
       get_url: url=http://download.virtualbox.org/virtualbox/rpm/fedora/virtualbox.repo dest=/etc/yum.repos.d/virtualbox.repo
-    - name: ensure $HOME/bin
+    - name: no gpgcheck for virtualbox
+      become: true
+      shell: sed -i.bak s/gpgcheck=1/gpgcheck=0/g /etc/yum.repos.d/virtualbox.repo
+    - name: install vbox deps
+      become: true
+      dnf: name={{ item }} state=latest
+      with_items:
+        - binutils
+        - gcc
+        - make
+        - patch
+        - libgomp
+        - glibc-headers
+        - glibc-devel
+        - kernel-headers
+        - kernel-devel
+        - dkms
+    - name: install vbox
+      become: true
+      dnf: name={{ item }} state=latest
+      with_items:
+        - VirtualBox-5.0
+    - name: add $user to vbox group
+      user: name={{ username }} groups=vboxusers append=yes
+    - name: add docker group
+      group: name=docker state=present
+    - name: add $user to docker group
+      user: name={{ username }} groups=docker append=yes
+    - name: run fedora-packager-setup
+      shell: fedora-packager-setup
+    - name: add $user to mock group
+      user: name={{ username }} groups=mock append=yes
+    - name: ensure $home/fedora-scm
+      file: path=/home/{{ username }}/fedora-scm state=directory
+    - name: ensure $home/bin
       file: path=/home/{{ username }}/bin state=directory
     - name: install docker-changelog.sh
       get_url: url=https://gist.githubusercontent.com/runcom/fcd9b4ac8705e95d62666a3d594ca1a0/raw/b3f679e33224bd0dc8e873e9c7fd66893f1f376e/docker-changelog.sh dest=/home/{{ username }}/bin/docker-changelog mode=0755
-    #- name: install godep via go get!
+    - name: install tlp repo
+      become: true
+      dnf: name=http://repo.linrunner.de/fedora/tlp/repos/releases/tlp-release-1.0-0.noarch.rpm disable_gpg_check=yes state=latest
+    - name: install rpmfusion repo
+      become: true
+      shell: dnf install -y http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+    - name: enable tlp-updates
+      become: true
+      shell: dnf config-manager --set-enabled tlp-updates
+    - name: enable tlp-updates-testing
+      become: true
+      shell: dnf config-manager --set-enabled tlp-updates-testing
+    - name: update
+      become: true
+      shell: dnf update -y
+    - name: install tlp tlp-rdw
+      become: true
+      dnf: name={{ item }} state=latest
+      with_items:
+        - tlp
+        - tlp-rdw
+    - name: tweak tlp
+      become: true
+      shell: sed -i.bak s/RESTORE_DEVICE_STATE_ON_STARTUP=0/RESTORE_DEVICE_STATE_ON_STARTUP=1/g /etc/default/tlp
+    - name: install additional tlp stuff
+      become: true
+      dnf: name={{ item }} state=latest
+      with_items:
+        - akmod-tp_smapi
+        - akmod-acpi_call
+    - name: tweak journald
+      become: true
+      shell: sed -i.bak s/SystemMaxUse=/SystemMaxUse=16M/g /etc/systemd/journald.conf
+    - name: systemd daemon reload
+      become: true
+      shell: systemctl daemon-reload
+    - name: flash player 1
+      become: true
+      shell: rpm -ivh http://linuxdownload.adobe.com/adobe-release/adobe-release-x86_64-1.0-1.noarch.rpm
+    - name: flash player 2
+      become: true
+      shell: rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-adobe-linux
+    - name: install flash player
+      become: true
+      dnf: name={{ item }} state=latest
+      with_items:
+        - flash-plugin
+        - nspluginwrapper
+        - alsa-plugins-pulseaudio
+        - libcurl
+    - name: tweak libvirtd
+      become: true
+      shell: sed -i.bak s/#user = "root"/user = "amurdaca"/g /etc/libvirt/qemu.conf
+    - name: add $USER to qemu group
+      user: name={{ username }} groups=qemu append=yes
+    - systemd: name=libvirtd state=restarted
+    - name: copy kem.sh
+      copy: src=files/kem.sh dest=/home/{{ username }}/.kem.sh backup=yes
+    - name: copy kem.sh desktop file
+      copy: src=files/kensington_expert_mouse.desktop dest=/home/{{ username }}/.config/autostart/kensigton_expert_mouse.desktop backup=yes
+
+
+
+
     #
     # TODO(runcom):
     # cp files/tmux.conf $HOME/.tmux.conf
@@ -169,7 +270,10 @@
     #
     # TODO(runcom):
     # git clone git://git.suckless.org/st
-    # copy files/config.h
+    # copy files/st/config.h
     # sed -e "/@tic/d" -i Makefile
     # sudo make clean install
-    # sudo cp files/st.desktop /usr/share/applications/
+    # sudo cp files/st/st.desktop /usr/share/applications/
+    #
+    # TODO(runcom):
+    # git clone, compile and install github/hub
