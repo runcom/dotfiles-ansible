@@ -261,6 +261,9 @@
       copy: src=files/kensington_expert_mouse.desktop dest=/home/{{ username }}/.config/autostart/kensigton_expert_mouse.desktop backup=yes
     - name: cargo install rustfmt
       shell: cargo install rustfmt
+    - name: install rust-debuginfo for src BZ#1385262
+      become: true
+      shell: dnf install -y --enablerepo fedora-debuginfo --enablerepo updates-debuginfo rust-debuginfo
 
 
 
