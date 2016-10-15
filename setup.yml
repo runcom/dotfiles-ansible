@@ -259,6 +259,8 @@
       copy: src=files/kem.sh dest=/home/{{ username }}/.kem.sh backup=yes
     - name: copy kem.sh desktop file
       copy: src=files/kensington_expert_mouse.desktop dest=/home/{{ username }}/.config/autostart/kensigton_expert_mouse.desktop backup=yes
+    - name: cargo install rustfmt
+      shell: cargo install rustfmt
 
 
 
