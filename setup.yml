@@ -271,7 +271,7 @@
 
 
 
-
+    # TODO install slack
     #
     # TODO(runcom):
     # cp files/tmux.conf $HOME/.tmux.conf
